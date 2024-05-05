@@ -8,6 +8,6 @@ namespace RecipeFinder.Core.Abstractions
         Task<FavoriteRecipe> GetFavoriteRecipeByIdAsync(int id);
         Task<IEnumerable<FavoriteRecipe>> GetAllFavoriteRecipesAsync();
         Task UpdateFavoriteRecipeAsync(FavoriteRecipe favoriteRecipe);
-        Task DeleteFavoriteRecipeAsync(int id);
+        Task DeleteFavoriteRecipeAsync(int userId, int recipeId);
     }
 }
