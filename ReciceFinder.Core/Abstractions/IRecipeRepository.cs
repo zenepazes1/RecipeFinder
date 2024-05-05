@@ -4,10 +4,10 @@ namespace RecipeFinder.Core.Abstractions
 {
     public interface IRecipeRepository
     {
-        Task<int> Create(Recipe recipe);
-        Task<int> Delete(int id);
-        Task<List<Recipe>> Get();
-        Task<int> Update(Recipe recipe);
-
+        Task<Recipe> AddAsync(Recipe recipe);
+        Task<Recipe> GetByIdAsync(int id);
+        Task<IEnumerable<Recipe>> GetAllAsync();
+        Task UpdateAsync(Recipe recipe);
+        Task DeleteAsync(int id);
     }
 }
