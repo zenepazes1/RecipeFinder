@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RecipeFinder.Core.Models;
 using RecipeFinder.DataAccess.Configurations;
+using RecipeFinder.DataAccess.Entities;
 
 namespace RecipeFinder.DataAccess
 {
@@ -18,11 +19,11 @@ namespace RecipeFinder.DataAccess
         }
 
         // DbSet properties
-        public DbSet<Recipe> Recipes { get; set; }
-        public DbSet<User> Users { get; set; }
-        public DbSet<Category> Categories { get; set; }
-        public DbSet<Ingredient> Ingredients { get; set; }
-        public DbSet<FavoriteRecipe> FavoriteRecipes { get; set; }
+        public DbSet<RecipeEntity> Recipes { get; set; }
+        public DbSet<UserEntity> Users { get; set; }
+        public DbSet<CategoryEntity> Categories { get; set; }
+        public DbSet<IngredientEntity> Ingredients { get; set; }
+        public DbSet<FavoriteRecipeEntity> FavoriteRecipes { get; set; }
     }
 
 }
