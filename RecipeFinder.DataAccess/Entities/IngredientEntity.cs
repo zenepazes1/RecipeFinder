@@ -4,5 +4,8 @@
     {
         public int IngredientId { get; set; }
         public string Name { get; set; }
+
+        public virtual ICollection<RecipeEntity> Recipes { get; set; } = new List<RecipeEntity>();
     }
+
 }

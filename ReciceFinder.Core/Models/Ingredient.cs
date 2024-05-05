@@ -5,10 +5,7 @@
         public int IngredientId { get; set; }
         public string Name { get; set; }
 
-        public Ingredient(int ingredientId, string name)
-        {
-            IngredientId = ingredientId;
-            Name = name;
-        }
+        public virtual ICollection<Recipe> Recipes { get; set; } = new List<Recipe>();
     }
+
 }

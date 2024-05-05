@@ -6,21 +6,14 @@
         public string Title { get; set; }
         public string Description { get; set; }
         public string Instructions { get; set; }
-        public int PreparationTime { get; set; } // Может быть в минутах или другом формате времени
-        public string Category { get; set; }
-        public int Difficulty { get; set; } // Может быть от 1 до 5, например
-        public int AuthorId { get; set; } // Внешний ключ на пользователя
+        public int PreparationTime { get; set; }
+        public int Difficulty { get; set; }
+        public int AuthorId { get; set; }
+        public int CategoryId { get; set; }
 
-        public Recipe(int recipeId, string title, string description, string instructions, int preparationTime, string category, int difficulty, int authorId)
-        {
-            RecipeId = recipeId;
-            Title = title;
-            Description = description;
-            Instructions = instructions;
-            PreparationTime = preparationTime;
-            Category = category;
-            Difficulty = difficulty;
-            AuthorId = authorId;
-        }
+        public virtual Category Category { get; set; }
+        public virtual User Author { get; set; }
+        public virtual ICollection<Ingredient> Ingredients { get; set; } = new List<Ingredient>();
     }
+
 }

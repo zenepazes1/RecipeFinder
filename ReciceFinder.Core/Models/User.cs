@@ -8,14 +8,9 @@
         public string PasswordHash { get; set; }
         public bool IsAdmin { get; set; }
 
-        public User(int userId, string username, string email, string passwordHash, bool isAdmin)
-        {
-            UserId = userId;
-            Username = username;
-            Email = email;
-            PasswordHash = passwordHash;
-            IsAdmin = isAdmin;
-        }
+        public virtual ICollection<Recipe> Recipes { get; set; } = new List<Recipe>();
+        public virtual ICollection<FavoriteRecipe> FavoriteRecipes { get; set; } = new List<FavoriteRecipe>();
     }
+
 
 }
