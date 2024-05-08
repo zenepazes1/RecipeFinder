@@ -7,13 +7,14 @@
         public string Description { get; set; }
         public string Instructions { get; set; }
         public int PreparationTime { get; set; }
-        public int CategoryId { get; set; }
         public int Difficulty { get; set; }
         public int AuthorId { get; set; }
+        public int CategoryId { get; set; }
+        public string ImageUrl { get; set; }
 
-        // Навигационные свойства
+        // Navigation
         public virtual CategoryEntity Category { get; set; }
         public virtual UserEntity Author { get; set; }
-        public virtual ICollection<FavoriteRecipeEntity> FavoriteRecipes { get; set; } = new List<FavoriteRecipeEntity>();  // Добавлено навигационное свойство
+        public virtual ICollection<FavoriteRecipeEntity> FavoriteRecipes { get; set; } = new List<FavoriteRecipeEntity>();
     }
 }

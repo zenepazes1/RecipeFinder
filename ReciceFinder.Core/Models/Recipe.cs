@@ -10,6 +10,7 @@
         public int Difficulty { get; set; }
         public int AuthorId { get; set; }
         public int CategoryId { get; set; }
+        public string ImageUrl { get; set; } 
 
         public virtual Category Category { get; set; }
         public virtual User Author { get; set; }
