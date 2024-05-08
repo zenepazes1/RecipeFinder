@@ -25,15 +25,24 @@ namespace RecipeFinder.DataAccess.Configurations
 
             builder.Property(r => r.Difficulty);
 
-            builder.Property(r => r.AuthorId);
+            builder.Property(r => r.AuthorId)
+                   .IsRequired();
+
+            builder.Property(r => r.CategoryId)
+                   .IsRequired();
+
+            builder.Property(r => r.ImageUrl)
+                   .HasMaxLength(500);
 
             builder.HasOne(r => r.Category)
                    .WithMany(c => c.Recipes)
-                   .HasForeignKey(r => r.CategoryId);
+                   .HasForeignKey(r => r.CategoryId)
+                   .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(r => r.Author)
                    .WithMany(u => u.Recipes)
-                   .HasForeignKey(r => r.AuthorId);
+                   .HasForeignKey(r => r.AuthorId)
+                   .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

@@ -24,7 +24,8 @@ namespace RecipeFinder.DataAccess.Repositories
                 PreparationTime = recipe.PreparationTime,
                 Difficulty = recipe.Difficulty,
                 AuthorId = recipe.AuthorId,
-                CategoryId = recipe.CategoryId
+                CategoryId = recipe.CategoryId,
+                ImageUrl = recipe.ImageUrl
             };
 
             await _context.Recipes.AddAsync(recipeEntity);
@@ -33,6 +34,7 @@ namespace RecipeFinder.DataAccess.Repositories
             recipe.RecipeId = recipeEntity.RecipeId;  // Update ID after save
             return recipe;
         }
+
 
         public async Task<Recipe> GetByIdAsync(int id)
         {
@@ -51,11 +53,13 @@ namespace RecipeFinder.DataAccess.Repositories
                 PreparationTime = recipeEntity.PreparationTime,
                 Difficulty = recipeEntity.Difficulty,
                 AuthorId = recipeEntity.AuthorId,
-                CategoryId = recipeEntity.CategoryId
+                CategoryId = recipeEntity.CategoryId,
+                ImageUrl = recipeEntity.ImageUrl
             };
 
             return recipe;
         }
+
 
         public async Task<IEnumerable<Recipe>> GetAllAsync()
         {
@@ -70,11 +74,13 @@ namespace RecipeFinder.DataAccess.Repositories
                     PreparationTime = r.PreparationTime,
                     Difficulty = r.Difficulty,
                     AuthorId = r.AuthorId,
-                    CategoryId = r.CategoryId
+                    CategoryId = r.CategoryId,
+                    ImageUrl = r.ImageUrl
                 }).ToListAsync();
 
             return recipes;
         }
+
 
         public async Task UpdateAsync(Recipe recipe)
         {
@@ -90,10 +96,12 @@ namespace RecipeFinder.DataAccess.Repositories
                 recipeEntity.Difficulty = recipe.Difficulty;
                 recipeEntity.AuthorId = recipe.AuthorId;
                 recipeEntity.CategoryId = recipe.CategoryId;
+                recipeEntity.ImageUrl = recipe.ImageUrl;
 
                 await _context.SaveChangesAsync();
             }
         }
+
 
         public async Task DeleteAsync(int id)
         {
