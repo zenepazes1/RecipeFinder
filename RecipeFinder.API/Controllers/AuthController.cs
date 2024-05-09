@@ -22,6 +22,11 @@ namespace RecipeFinder.API.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
+            if (request.Email == null || request.Password == null)
+            {
+                return BadRequest("Email and password are required.");
+            }
+
             var user = new User { Username = request.Email, Email = request.Email };
             var result = await _userManager.CreateAsync(user, request.Password);
 
