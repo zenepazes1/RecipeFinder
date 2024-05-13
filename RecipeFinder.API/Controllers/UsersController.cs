@@ -20,25 +20,25 @@ namespace RecipeFinder.API.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> RegisterUser([FromBody] UserRequest request)
         {
-            var user = new User
+            var user = new ApplicationUser
             {
-                Username = request.Username,
+                UserName = request.Username,
                 Email = request.Email,
                 PasswordHash = request.Password // тут потом поправим
             };
 
             var createdUser = await _userService.CreateUserAsync(user);
             var response = new UserResponse(
-                createdUser.UserId,
-                createdUser.Username,
+                createdUser.Id,
+                createdUser.UserName,
                 createdUser.Email);
 
-            return CreatedAtAction(nameof(GetUser), new { id = createdUser.UserId }, response);
+            return CreatedAtAction(nameof(GetUser), new { id = createdUser.UserName }, response);
         }
 
         // GET: api/Users/{id}
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetUser(int id)
+        public async Task<IActionResult> GetUser(string id)
         {
             var user = await _userService.GetUserByIdAsync(id);
             if (user == null)
@@ -47,8 +47,8 @@ namespace RecipeFinder.API.Controllers
             }
 
             var response = new UserResponse(
-                user.UserId,
-                user.Username,
+                user.Id,
+                user.UserName,
                 user.Email);
 
             return Ok(response);
