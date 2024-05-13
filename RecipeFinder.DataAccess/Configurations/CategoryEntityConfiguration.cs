@@ -9,10 +9,9 @@ namespace RecipeFinder.DataAccess.Configurations
         public void Configure(EntityTypeBuilder<CategoryEntity> builder)
         {
             builder.HasKey(c => c.CategoryId);
-
             builder.Property(c => c.Name)
-                   .IsRequired()
-                   .HasMaxLength(100);
+                .IsRequired()
+                .HasMaxLength(100);
         }
     }
 }

@@ -10,11 +10,11 @@
         public int Difficulty { get; set; }
         public int AuthorId { get; set; }
         public int CategoryId { get; set; }
-        public string ImageUrl { get; set; } 
+        public string ImageUrl { get; set; }
 
         public virtual Category Category { get; set; }
-        public virtual User Author { get; set; }
+        public virtual ApplicationUser Author { get; set; }
         public virtual ICollection<Ingredient> Ingredients { get; set; } = new List<Ingredient>();
+        public virtual ICollection<FavoriteRecipe> FavoriteRecipes { get; set; } = new List<FavoriteRecipe>();
     }
-
 }

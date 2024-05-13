@@ -1,6 +1,7 @@
-﻿using RecipeFinder.DataAccess.Repositories;
+﻿using RecipeFinder.Core.Abstractions;
 using RecipeFinder.Core.Models;
-using RecipeFinder.Core.Abstractions;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace RecipeFinder.Application.Service
 {
@@ -13,27 +14,27 @@ namespace RecipeFinder.Application.Service
             _userRepository = userRepository;
         }
 
-        public async Task<User> CreateUserAsync(User user)
+        public async Task<ApplicationUser> CreateUserAsync(ApplicationUser user)
         {
             return await _userRepository.AddAsync(user);
         }
 
-        public async Task<IEnumerable<User>> GetAllUsersAsync()
+        public async Task<IEnumerable<ApplicationUser>> GetAllUsersAsync()
         {
             return await _userRepository.GetAllAsync();
         }
 
-        public async Task<User> GetUserByIdAsync(int id)
+        public async Task<ApplicationUser> GetUserByIdAsync(string id)
         {
             return await _userRepository.GetByIdAsync(id);
         }
 
-        public async Task UpdateUserAsync(User user)
+        public async Task UpdateUserAsync(ApplicationUser user)
         {
             await _userRepository.UpdateAsync(user);
         }
 
-        public async Task DeleteUserAsync(int id)
+        public async Task DeleteUserAsync(string id)
         {
             await _userRepository.DeleteAsync(id);
         }

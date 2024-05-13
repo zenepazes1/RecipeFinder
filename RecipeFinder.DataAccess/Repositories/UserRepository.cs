@@ -1,92 +1,95 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using RecipeFinder.Core.Abstractions;
 using RecipeFinder.Core.Models;
 using RecipeFinder.DataAccess.Entities;
-
 
 namespace RecipeFinder.DataAccess.Repositories
 {
     public class UserRepository : IUserRepository
     {
+        private readonly UserManager<ApplicationUserEntity> _userManager;
         private readonly RecipeFinderDbContext _context;
 
-        public UserRepository(RecipeFinderDbContext context)
+        public UserRepository(UserManager<ApplicationUserEntity> userManager, RecipeFinderDbContext context)
         {
+            _userManager = userManager;
             _context = context;
         }
 
-        public async Task<User> AddAsync(User user)
+        public async Task<ApplicationUser> AddAsync(ApplicationUser user)
         {
-            var userEntity = new UserEntity
+            var userEntity = new ApplicationUserEntity
             {
-                Username = user.Username,
+                UserName = user.Email, // В Identity UserName часто используется как email
                 Email = user.Email,
-                PasswordHash = user.PasswordHash,
-                IsAdmin = user.IsAdmin
+                FirstName = user.FirstName,
+                LastName = user.LastName
             };
 
-            await _context.Users.AddAsync(userEntity);
-            await _context.SaveChangesAsync();
+            var result = await _userManager.CreateAsync(userEntity, user.PasswordHash);
 
-            user.UserId = userEntity.UserId;
-            return user;
+            if (result.Succeeded)
+            {
+                return new ApplicationUser
+                {
+                    Id = userEntity.Id, // IdentityUser использует строковый ID
+                    Email = userEntity.Email,
+                    FirstName = userEntity.FirstName,
+                    LastName = userEntity.LastName
+                };
+            }
+
+            throw new InvalidOperationException("User could not be created");
         }
 
-        public async Task<User> GetByIdAsync(int id)
+        public async Task<ApplicationUser> GetByIdAsync(string id)
         {
-            var userEntity = await _context.Users
-                .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.UserId == id);
+            var userEntity = await _userManager.FindByIdAsync(id);
 
             if (userEntity == null) return null;
 
-            return new User
+            return new ApplicationUser
             {
-                UserId = userEntity.UserId,
-                Username = userEntity.Username,
+                Id = userEntity.Id,
                 Email = userEntity.Email,
-                PasswordHash = userEntity.PasswordHash,
-                IsAdmin = userEntity.IsAdmin
+                FirstName = userEntity.FirstName,
+                LastName = userEntity.LastName
             };
         }
 
-        public async Task<IEnumerable<User>> GetAllAsync()
+        public async Task<IEnumerable<ApplicationUser>> GetAllAsync()
         {
-            return await _context.Users
-                .AsNoTracking()
-                .Select(u => new User
-                {
-                    UserId = u.UserId,
-                    Username = u.Username,
-                    Email = u.Email,
-                    PasswordHash = u.PasswordHash,
-                    IsAdmin = u.IsAdmin
-                }).ToListAsync();
+            var users = await _context.Users.ToListAsync();
+            return users.Select(u => new ApplicationUser
+            {
+                Id = u.Id,
+                Email = u.Email,
+                FirstName = u.FirstName,
+                LastName = u.LastName
+            });
         }
 
-        public async Task UpdateAsync(User user)
+        public async Task UpdateAsync(ApplicationUser user)
         {
-            var userEntity = await _context.Users.FindAsync(user.UserId);
-
+            var userEntity = await _userManager.FindByIdAsync(user.Id);
             if (userEntity != null)
             {
-                userEntity.Username = user.Username;
                 userEntity.Email = user.Email;
-                userEntity.PasswordHash = user.PasswordHash;
-                userEntity.IsAdmin = user.IsAdmin;
+                userEntity.UserName = user.Email;
+                userEntity.FirstName = user.FirstName;
+                userEntity.LastName = user.LastName;
 
-                await _context.SaveChangesAsync();
+                await _userManager.UpdateAsync(userEntity);
             }
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(string id)
         {
-            var userEntity = await _context.Users.FindAsync(id);
-
+            var userEntity = await _userManager.FindByIdAsync(id);
             if (userEntity != null)
             {
-                _context.Users.Remove(userEntity);
-                await _context.SaveChangesAsync();
+                await _userManager.DeleteAsync(userEntity);
             }
         }
     }

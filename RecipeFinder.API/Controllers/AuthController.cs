@@ -9,10 +9,10 @@ namespace RecipeFinder.API.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly UserManager<User> _userManager;
-        private readonly SignInManager<User> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public AuthController(UserManager<User> userManager, SignInManager<User> signInManager)
+        public AuthController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -27,7 +27,7 @@ namespace RecipeFinder.API.Controllers
                 return BadRequest("Email and password are required.");
             }
 
-            var user = new User { Username = request.Email, Email = request.Email };
+            var user = new ApplicationUser { UserName = request.Email, Email = request.Email };
             var result = await _userManager.CreateAsync(user, request.Password);
 
             if (result.Succeeded)

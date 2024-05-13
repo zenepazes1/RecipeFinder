@@ -1,4 +1,6 @@
-﻿namespace RecipeFinder.DataAccess.Entities
+﻿using System.Collections.Generic;
+
+namespace RecipeFinder.DataAccess.Entities
 {
     public class RecipeEntity
     {
@@ -8,13 +10,13 @@
         public string Instructions { get; set; }
         public int PreparationTime { get; set; }
         public int Difficulty { get; set; }
+        public string ImageUrl { get; set; }
         public int AuthorId { get; set; }
         public int CategoryId { get; set; }
-        public string ImageUrl { get; set; }
 
-        // Navigation
+        public virtual ApplicationUserEntity Author { get; set; }
         public virtual CategoryEntity Category { get; set; }
-        public virtual UserEntity Author { get; set; }
+        public virtual ICollection<IngredientEntity> Ingredients { get; set; } = new List<IngredientEntity>();
         public virtual ICollection<FavoriteRecipeEntity> FavoriteRecipes { get; set; } = new List<FavoriteRecipeEntity>();
     }
 }

@@ -13,12 +13,12 @@ namespace RecipeFinder.DataAccess.Configurations
             builder.HasOne(fr => fr.User)
                    .WithMany(u => u.FavoriteRecipes)
                    .HasForeignKey(fr => fr.UserId)
-                   .OnDelete(DeleteBehavior.Cascade);  // Указывает, что при удалении пользователя удаляются и его избранные рецепты
+                   .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(fr => fr.Recipe)
                    .WithMany(r => r.FavoriteRecipes)
                    .HasForeignKey(fr => fr.RecipeId)
-                   .OnDelete(DeleteBehavior.Cascade);  // Указывает, что при удалении рецепта удаляются все его ссылки в избранном
+                   .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

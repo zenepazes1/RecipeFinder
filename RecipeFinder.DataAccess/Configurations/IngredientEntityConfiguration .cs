@@ -1,7 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using RecipeFinder.DataAccess.Entities;
-
 
 namespace RecipeFinder.DataAccess.Configurations
 {
@@ -10,10 +9,9 @@ namespace RecipeFinder.DataAccess.Configurations
         public void Configure(EntityTypeBuilder<IngredientEntity> builder)
         {
             builder.HasKey(i => i.IngredientId);
-
             builder.Property(i => i.Name)
-                   .IsRequired()
-                   .HasMaxLength(100);
+                .IsRequired()
+                .HasMaxLength(100);
         }
     }
 }
