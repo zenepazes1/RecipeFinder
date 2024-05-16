@@ -10,8 +10,8 @@ namespace RecipeFinder.DataAccess.Configurations
         {
             builder.HasKey(c => c.CategoryId);
             builder.Property(c => c.Name)
-                .IsRequired()
-                .HasMaxLength(100);
+                   .IsRequired()
+                   .HasMaxLength(100);
         }
     }
 }

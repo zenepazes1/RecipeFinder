@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RecipeFinder.API.Contracts;
-using RecipeFinder.Application.Service;
+using RecipeFinder.Application.Services;
+using RecipeFinder.Core.Abstractions;
 using RecipeFinder.Core.Models;
 
 namespace RecipeFinder.API.Controllers
@@ -9,51 +10,68 @@ namespace RecipeFinder.API.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly UserService _userService;
+        private readonly IUserService _userService;
 
-        public UsersController(UserService userService)
+        public UsersController(IUserService userService)
         {
             _userService = userService;
         }
 
-        // POST: api/Users/register
-        [HttpPost("register")]
-        public async Task<IActionResult> RegisterUser([FromBody] UserRequest request)
+        [HttpGet]
+        public async Task<IActionResult> GetAllUsers()
         {
-            var user = new User
-            {
-                Username = request.Username,
-                Email = request.Email,
-                PasswordHash = request.Password // тут потом поправим
-            };
-
-            var createdUser = await _userService.CreateUserAsync(user);
-            var response = new UserResponse(
-                createdUser.UserId,
-                createdUser.Username,
-                createdUser.Email);
-
-            return CreatedAtAction(nameof(GetUser), new { id = createdUser.UserId }, response);
-        }
-
-        // GET: api/Users/{id}
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetUser(int id)
-        {
-            var user = await _userService.GetUserByIdAsync(id);
-            if (user == null)
-            {
-                return NotFound($"User with ID {id} not found.");
-            }
-
-            var response = new UserResponse(
-                user.UserId,
-                user.Username,
-                user.Email);
-
+            var users = await _userService.GetAllUsersAsync();
+            var response = users.Select(u => new UserResponse(u.Id, u.Email, u.FirstName, u.LastName));
             return Ok(response);
         }
 
-        // 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetUserById(string id)
+        {
+            var user = await _userService.GetUserByIdAsync(id);
+            if (user == null)
+                return NotFound($"User with ID {id} not found.");
+
+            var response = new UserResponse(user.Id, user.Email, user.FirstName, user.LastName);
+            return Ok(response);
+        }
+
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUser(string id, [FromBody] UserRequest request)
+        {
+            var userToUpdate = await _userService.GetUserByIdAsync(id);
+            if (userToUpdate == null)
+                return NotFound($"User with ID {id} not found.");
+
+            userToUpdate.FirstName = request.FirstName;
+            userToUpdate.LastName = request.LastName;
+
+            await _userService.UpdateUserAsync(userToUpdate);
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteUser(string id)
+        {
+            var user = await _userService.GetUserByIdAsync(id);
+            if (user == null)
+                return NotFound($"User with ID {id} not found.");
+
+            await _userService.DeleteUserAsync(id);
+            return NoContent();
+        }
+
+        [HttpPost("{id}/change-password")]
+        public async Task<IActionResult> ChangePassword(string id, [FromBody] ChangePasswordRequest changePasswordRequest)
+        {
+            var user = await _userService.GetUserByIdAsync(id);
+            if (user == null)
+                return NotFound($"User with ID {id} not found.");
+            var result = await _userService.ChangePasswordAsync(id, changePasswordRequest.OldPassword, changePasswordRequest.NewPassword);
+            if (!result)
+                return BadRequest("Password could not be changed.");
+            return NoContent();
+        }
     }
 }

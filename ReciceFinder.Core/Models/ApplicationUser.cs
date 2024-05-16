@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.Collections.Generic;
 
 namespace RecipeFinder.Core.Models
 {
@@ -9,5 +10,4 @@ namespace RecipeFinder.Core.Models
         public virtual ICollection<Recipe> Recipes { get; set; } = new List<Recipe>();
         public virtual ICollection<FavoriteRecipe> FavoriteRecipes { get; set; } = new List<FavoriteRecipe>();
     }
-
 }

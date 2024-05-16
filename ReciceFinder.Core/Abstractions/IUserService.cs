@@ -4,10 +4,13 @@ namespace RecipeFinder.Core.Abstractions
 {
     public interface IUserService
     {
-        Task<User> CreateUserAsync(User user);
-        Task<User> GetUserByIdAsync(int id);
-        Task<IEnumerable<User>> GetAllUsersAsync();
-        Task UpdateUserAsync(User user);
-        Task DeleteUserAsync(int id);
+        Task<ApplicationUser> CreateUserAsync(ApplicationUser user);
+        Task<ApplicationUser> GetUserByIdAsync(string id);
+        Task<IEnumerable<ApplicationUser>> GetAllUsersAsync();
+        Task UpdateUserAsync(ApplicationUser user);
+        Task DeleteUserAsync(string id);
+        Task<bool> AssignUserRoleAsync(string userId, string role);
+        Task<ApplicationUser> GetByEmailAsync(string email);
+        Task<bool> ChangePasswordAsync(string userId, string oldPassword, string newPassword);
     }
 }

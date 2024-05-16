@@ -1,8 +1,8 @@
 ﻿namespace RecipeFinder.API.Contracts
 {
     public record UserRequest(
-        string Username, 
-        string Email, 
-        string Password);
+        string Email,
+        string FirstName,
+        string LastName);
 
 }

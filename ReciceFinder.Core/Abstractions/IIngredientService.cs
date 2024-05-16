@@ -1,4 +1,5 @@
 ﻿using RecipeFinder.Core.Models;
+using RecipeFinder.Core.Common;
 
 namespace RecipeFinder.Core.Abstractions
 {
@@ -9,5 +10,6 @@ namespace RecipeFinder.Core.Abstractions
         Task<IEnumerable<Ingredient>> GetAllIngredientsAsync();
         Task UpdateIngredientAsync(Ingredient ingredient);
         Task DeleteIngredientAsync(int id);
+        Task<Ingredient> GetByNameIngredientAsync(string name);
     }
 }

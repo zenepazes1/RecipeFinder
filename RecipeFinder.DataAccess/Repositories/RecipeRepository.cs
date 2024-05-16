@@ -28,23 +28,24 @@ namespace RecipeFinder.DataAccess.Repositories
                 ImageUrl = recipe.ImageUrl
             };
 
-            await _context.Recipes.AddAsync(recipeEntity);
+            _context.Recipes.Add(recipeEntity);
             await _context.SaveChangesAsync();
 
-            recipe.RecipeId = recipeEntity.RecipeId;  // Update ID after save
+            recipe.RecipeId = recipeEntity.RecipeId;
             return recipe;
         }
-
 
         public async Task<Recipe> GetByIdAsync(int id)
         {
             var recipeEntity = await _context.Recipes
+                .Include(r => r.Author)
+                .Include(r => r.Category)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(r => r.RecipeId == id);
 
             if (recipeEntity == null) return null;
 
-            var recipe = new Recipe
+            return new Recipe
             {
                 RecipeId = recipeEntity.RecipeId,
                 Title = recipeEntity.Title,
@@ -56,14 +57,13 @@ namespace RecipeFinder.DataAccess.Repositories
                 CategoryId = recipeEntity.CategoryId,
                 ImageUrl = recipeEntity.ImageUrl
             };
-
-            return recipe;
         }
-
 
         public async Task<IEnumerable<Recipe>> GetAllAsync()
         {
-            var recipes = await _context.Recipes
+            return await _context.Recipes
+                .Include(r => r.Author)
+                .Include(r => r.Category)
                 .AsNoTracking()
                 .Select(r => new Recipe
                 {
@@ -77,36 +77,22 @@ namespace RecipeFinder.DataAccess.Repositories
                     CategoryId = r.CategoryId,
                     ImageUrl = r.ImageUrl
                 }).ToListAsync();
-
-            return recipes;
         }
-
 
         public async Task UpdateAsync(Recipe recipe)
         {
-            var recipeEntity = await _context.Recipes
-                .FirstOrDefaultAsync(r => r.RecipeId == recipe.RecipeId);
+            var recipeEntity = await _context.Recipes.FindAsync(recipe.RecipeId);
 
             if (recipeEntity != null)
             {
-                recipeEntity.Title = recipe.Title;
-                recipeEntity.Description = recipe.Description;
-                recipeEntity.Instructions = recipe.Instructions;
-                recipeEntity.PreparationTime = recipe.PreparationTime;
-                recipeEntity.Difficulty = recipe.Difficulty;
-                recipeEntity.AuthorId = recipe.AuthorId;
-                recipeEntity.CategoryId = recipe.CategoryId;
-                recipeEntity.ImageUrl = recipe.ImageUrl;
-
+                _context.Entry(recipeEntity).CurrentValues.SetValues(recipe);
                 await _context.SaveChangesAsync();
             }
         }
 
-
         public async Task DeleteAsync(int id)
         {
-            var recipeEntity = await _context.Recipes
-                .FindAsync(id);
+            var recipeEntity = await _context.Recipes.FindAsync(id);
 
             if (recipeEntity != null)
             {
@@ -114,5 +100,28 @@ namespace RecipeFinder.DataAccess.Repositories
                 await _context.SaveChangesAsync();
             }
         }
+        public async Task<IEnumerable<Recipe>> SearchAsync(string searchTerm)
+        {
+            return await _context.Recipes
+                .Include(r => r.Author)
+                .Include(r => r.Category)
+                .Where(r => EF.Functions.Like(r.Title, $"%{searchTerm}%") ||
+                            EF.Functions.Like(r.Description, $"%{searchTerm}%"))
+                .Select(r => new Recipe
+                {
+                    RecipeId = r.RecipeId,
+                    Title = r.Title,
+                    Description = r.Description,
+                    Instructions = r.Instructions,
+                    PreparationTime = r.PreparationTime,
+                    Difficulty = r.Difficulty,
+                    AuthorId = r.AuthorId,
+                    CategoryId = r.CategoryId,
+                    ImageUrl = r.ImageUrl
+                })
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
     }
 }

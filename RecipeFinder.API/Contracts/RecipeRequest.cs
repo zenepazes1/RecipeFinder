@@ -6,7 +6,7 @@
         string Instructions,
         int PreparationTime,
         int Difficulty,
-        int AuthorId,
+        string AuthorId,
         int CategoryId,
-        string ImageUrl);  // DTO for resuest
+        string ImageUrl);
 }

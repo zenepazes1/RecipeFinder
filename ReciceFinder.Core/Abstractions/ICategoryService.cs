@@ -7,7 +7,9 @@ namespace RecipeFinder.Core.Abstractions
         Task<Category> CreateCategoryAsync(Category category);
         Task<Category> GetCategoryByIdAsync(int id);
         Task<IEnumerable<Category>> GetAllCategoriesAsync();
-        Task UpdateCategoryAsync(Category category);
-        Task DeleteCategoryAsync(int id);
+        Task<bool> UpdateCategoryAsync(Category category);
+        Task<bool> DeleteCategoryAsync(int id);
+        Task<Category> GetByNameCategoryAsync(string name);
+
     }
 }
