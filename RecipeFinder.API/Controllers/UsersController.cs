@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using RecipeFinder.API.Contracts;
 using RecipeFinder.Application.Services;
 using RecipeFinder.Core.Abstractions;

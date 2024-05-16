@@ -1,4 +1,4 @@
-﻿namespace RecipeFinder.API.Contracts
+namespace RecipeFinder.API.Contracts
 {
     public record UserResponse(
         string UserId,
