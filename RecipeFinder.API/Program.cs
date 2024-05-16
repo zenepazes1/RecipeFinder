@@ -2,7 +2,6 @@ using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
-using RecipeFinder.API;
 using Microsoft.AspNetCore.Identity;
 using RecipeFinder.DataAccess.Entities;
 using RecipeFinder.DataAccess;
@@ -10,13 +9,17 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
+using RecipeFinder.API;
+using RecipeFinder.Application.Services;
+using RecipeFinder.Core.Abstractions;
+using RecipeFinder.DataAccess.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddDbContext<RecipeFinderDbContext>(options =>
-        options.UseNpgsql(
-            builder.Configuration.GetConnectionString("RecipeFinderDbContext")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("RecipeFinderDbContext")));
 
 builder.Services.Configure<JWTSettings>(builder.Configuration.GetSection("JWTSettings"));
 
@@ -53,27 +56,34 @@ var account = new Account(
     cloudinarySettings.ApiSecret
 );
 var cloudinary = new Cloudinary(account);
-builder.Services.AddSingleton(cloudinary); // Regestration Cloudinary as singleton service
+builder.Services.AddSingleton(cloudinary);
 
-/*builder.Services.AddIdentity<ApplicationUserEntity, IdentityRole>()
+builder.Services.AddIdentity<ApplicationUserEntity, IdentityRole>()
     .AddEntityFrameworkStores<RecipeFinderDbContext>()
-    .AddDefaultTokenProviders();*/
+    .AddDefaultTokenProviders();
 
-builder.Services.AddIdentity<ApplicationUserEntity, IdentityRole>(options =>
-{
-    options.Password.RequireDigit = true;
-    options.Password.RequiredLength = 6;
-    options.User.RequireUniqueEmail = true;
-})
-.AddEntityFrameworkStores<RecipeFinderDbContext>()
-.AddDefaultTokenProviders();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IRecipeService, RecipesService>();
+builder.Services.AddScoped<IRecipeRepository, RecipeRepository>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IIngredientService, IngredientService>();
+builder.Services.AddScoped<IIngredientRepository, IngredientRepository>();
+builder.Services.AddScoped<IFavoriteRecipeService, FavoriteRecipeService>();
+builder.Services.AddScoped<IFavoriteRecipeRepository, FavoriteRecipeRepository>();
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    await RoleInitializer.InitializeAsync(roleManager);
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -83,10 +93,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();

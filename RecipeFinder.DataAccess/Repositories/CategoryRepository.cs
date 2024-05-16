@@ -21,7 +21,7 @@ namespace RecipeFinder.DataAccess.Repositories
                 Name = category.Name
             };
 
-            await _context.Categories.AddAsync(categoryEntity);
+            _context.Categories.Add(categoryEntity); // Removed the asynchronous call here for adding to context
             await _context.SaveChangesAsync();
 
             category.CategoryId = categoryEntity.CategoryId; // Update ID after save
@@ -45,13 +45,15 @@ namespace RecipeFinder.DataAccess.Repositories
 
         public async Task<IEnumerable<Category>> GetAllAsync()
         {
-            return await _context.Categories
+            var categories = await _context.Categories
                 .AsNoTracking()
                 .Select(c => new Category
                 {
                     CategoryId = c.CategoryId,
                     Name = c.Name
                 }).ToListAsync();
+
+            return categories;
         }
 
         public async Task UpdateAsync(Category category)
@@ -61,6 +63,7 @@ namespace RecipeFinder.DataAccess.Repositories
             if (categoryEntity != null)
             {
                 categoryEntity.Name = category.Name;
+                _context.Categories.Update(categoryEntity); // Explicitly marking the entity as modified
                 await _context.SaveChangesAsync();
             }
         }
@@ -75,5 +78,23 @@ namespace RecipeFinder.DataAccess.Repositories
                 await _context.SaveChangesAsync();
             }
         }
+        public async Task<Category> GetByNameAsync(string name)
+        {
+            var lowerName = name.ToLower();
+            var categoryEntity = await _context.Categories
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.Name.ToLower() == lowerName);
+
+            if (categoryEntity == null) return null;
+
+            return new Category
+            {
+                CategoryId = categoryEntity.CategoryId,
+                Name = categoryEntity.Name
+            };
+        }
+
+
+
     }
 }

@@ -5,9 +5,9 @@ namespace RecipeFinder.Core.Abstractions
     public interface IFavoriteRecipeRepository
     {
         Task<FavoriteRecipe> AddAsync(FavoriteRecipe favoriteRecipe);
-        Task<FavoriteRecipe> GetByIdAsync(int id);
+        Task<FavoriteRecipe> GetByIdAsync(string userId, int recipeId);
         Task<IEnumerable<FavoriteRecipe>> GetAllAsync();
-        Task UpdateAsync(FavoriteRecipe favoriteRecipe);
-        Task DeleteAsync(int userId, int recipeId);
+        Task DeleteAsync(string userId, int recipeId);
     }
+
 }

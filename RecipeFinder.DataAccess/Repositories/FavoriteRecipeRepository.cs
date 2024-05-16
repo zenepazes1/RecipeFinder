@@ -25,13 +25,22 @@ namespace RecipeFinder.DataAccess.Repositories
             await _context.FavoriteRecipes.AddAsync(favoriteRecipeEntity);
             await _context.SaveChangesAsync();
 
-            return favoriteRecipe;  // Возвращает модель без изменения, так как ключи уже установлены
+            return favoriteRecipe;  // Returns the model as the keys are already set
         }
 
-        public async Task<FavoriteRecipe> GetByIdAsync(int id)
+        public async Task<FavoriteRecipe> GetByIdAsync(string userId, int recipeId)
         {
+            var favoriteRecipeEntity = await _context.FavoriteRecipes
+                .AsNoTracking()
+                .FirstOrDefaultAsync(fr => fr.UserId == userId && fr.RecipeId == recipeId);
 
-            return null;
+            if (favoriteRecipeEntity == null) return null;
+
+            return new FavoriteRecipe
+            {
+                UserId = favoriteRecipeEntity.UserId,
+                RecipeId = favoriteRecipeEntity.RecipeId
+            };
         }
 
         public async Task<IEnumerable<FavoriteRecipe>> GetAllAsync()
@@ -47,14 +56,12 @@ namespace RecipeFinder.DataAccess.Repositories
 
         public async Task UpdateAsync(FavoriteRecipe favoriteRecipe)
         {
-
+            // Typically, there's not much to update in a join entity like FavoriteRecipe, 
+            // unless you're tracking additional fields like 'addedOn', etc.
+            // This method can be implemented if there's a need to update additional fields in the future.
         }
 
-        public async Task DeleteAsync(int id)
-        {
-        }
-
-        public async Task DeleteAsync(int userId, int recipeId)
+        public async Task DeleteAsync(string userId, int recipeId)
         {
             var favoriteRecipeEntity = await _context.FavoriteRecipes
                 .FirstOrDefaultAsync(fr => fr.UserId == userId && fr.RecipeId == recipeId);

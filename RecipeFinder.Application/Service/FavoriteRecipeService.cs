@@ -1,8 +1,10 @@
 ﻿using RecipeFinder.DataAccess.Repositories;
 using RecipeFinder.Core.Models;
 using RecipeFinder.Core.Abstractions;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-namespace RecipeFinder.Application.Service
+namespace RecipeFinder.Application.Services
 {
     public class FavoriteRecipeService : IFavoriteRecipeService
     {
@@ -15,12 +17,19 @@ namespace RecipeFinder.Application.Service
 
         public async Task<FavoriteRecipe> AddFavoriteRecipeAsync(FavoriteRecipe favoriteRecipe)
         {
+            // Check if the recipe is already favorited by the user
+            var existingFavorite = await _favoriteRecipeRepository.GetByIdAsync(favoriteRecipe.UserId, favoriteRecipe.RecipeId);
+            if (existingFavorite != null)
+            {
+                throw new InvalidOperationException("This recipe is already in your favorites.");
+            }
+
             return await _favoriteRecipeRepository.AddAsync(favoriteRecipe);
         }
 
-        public async Task<FavoriteRecipe> GetFavoriteRecipeByIdAsync(int id)
+        public async Task<FavoriteRecipe> GetFavoriteRecipeByIdAsync(string userId, int recipeId)
         {
-            return await _favoriteRecipeRepository.GetByIdAsync(id);
+            return await _favoriteRecipeRepository.GetByIdAsync(userId, recipeId);
         }
 
         public async Task<IEnumerable<FavoriteRecipe>> GetAllFavoriteRecipesAsync()
@@ -28,12 +37,7 @@ namespace RecipeFinder.Application.Service
             return await _favoriteRecipeRepository.GetAllAsync();
         }
 
-        public async Task UpdateFavoriteRecipeAsync(FavoriteRecipe favoriteRecipe)
-        {
-            await _favoriteRecipeRepository.UpdateAsync(favoriteRecipe);
-        }
-
-        public async Task DeleteFavoriteRecipeAsync(int userId, int recipeId)
+        public async Task DeleteFavoriteRecipeAsync(string userId, int recipeId)
         {
             await _favoriteRecipeRepository.DeleteAsync(userId, recipeId);
         }

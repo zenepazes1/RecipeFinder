@@ -1,70 +1,91 @@
-﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using RecipeFinder.API.Contracts;
+using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using RecipeFinder.Core.Models;
+using RecipeFinder.Core.Abstractions;
+using RecipeFinder.DataAccess.Entities;
+using System;
+using RecipeFinder.API.Contracts;
 
-namespace RecipeFinder.API.Controllers
+namespace RecipeFinder.Application.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IUserService _userService;
+        private readonly UserManager<ApplicationUserEntity> _userManager;
+        private readonly IConfiguration _configuration;
 
-        public AuthController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        public AuthController(IUserService userService, UserManager<ApplicationUserEntity> userManager, IConfiguration configuration)
         {
+            _userService = userService;
             _userManager = userManager;
-            _signInManager = signInManager;
+            _configuration = configuration;
         }
 
-        // POST: api/Auth/register
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterRequest request)
+        public async Task<IActionResult> Register(RegisterRequest request)
         {
-            if (request.Email == null || request.Password == null)
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var userEntity = new ApplicationUserEntity
             {
-                return BadRequest("Email and password are required.");
+                UserName = request.Email,
+                Email = request.Email,
+                FirstName = request.FirstName,
+                LastName = request.LastName
+            };
+
+            var result = await _userManager.CreateAsync(userEntity, request.Password);
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors);
             }
 
-            var user = new ApplicationUser { UserName = request.Email, Email = request.Email };
-            var result = await _userManager.CreateAsync(user, request.Password);
+            // Optionally assign roles or perform other setup tasks
+            await _userService.AssignUserRoleAsync(userEntity.Id, "User"); // Default role
 
-            if (result.Succeeded)
-            {
-                await _signInManager.SignInAsync(user, isPersistent: false);
-                return Ok("Registration successful");
-            }
-
-            return BadRequest(result.Errors);
+            return Ok(new RegisterResponse(userEntity.Id, userEntity.Email, true, "Registration successful"));
         }
 
-        // POST: api/Auth/login
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginRequest request)
+        public async Task<IActionResult> Login(LoginRequest request)
         {
-            var result = await _signInManager.PasswordSignInAsync(request.Email, request.Password, isPersistent: false, lockoutOnFailure: false);
+            var user = await _userManager.FindByEmailAsync(request.Email);
+            if (user != null && await _userManager.CheckPasswordAsync(user, request.Password))
+            {
+                var token = GenerateJwtToken(user);
+                return Ok(new LoginResponse(token, user.Id, user.Email, await _userManager.GetRolesAsync(user)));
+            }
 
-            if (result.Succeeded)
-            {
-                return Ok("Login successful");
-            }
-            else if (result.IsLockedOut)
-            {
-                return BadRequest("Account locked out");
-            }
-            else
-            {
-                return BadRequest("Invalid login attempt");
-            }
+            return Unauthorized("Invalid login attempt.");
         }
 
-        // POST: api/Auth/logout
-        [HttpPost("logout")]
-        public async Task<IActionResult> Logout()
+        private string GenerateJwtToken(ApplicationUserEntity user)
         {
-            await _signInManager.SignOutAsync();
-            return Ok("Logged out");
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:SecretKey"]));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
+            };
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["JwtSettings:Issuer"],
+                audience: _configuration["JwtSettings:Audience"],
+                claims: claims,
+                expires: DateTime.Now.AddHours(12), 
+                signingCredentials: credentials
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }

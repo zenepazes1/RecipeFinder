@@ -21,10 +21,10 @@ namespace RecipeFinder.DataAccess.Repositories
                 Name = ingredient.Name
             };
 
-            await _context.Ingredients.AddAsync(ingredientEntity);
+            _context.Ingredients.Add(ingredientEntity);
             await _context.SaveChangesAsync();
 
-            ingredient.IngredientId = ingredientEntity.IngredientId; // Update ID after save
+            ingredient.IngredientId = ingredientEntity.IngredientId;  // Update ID after save
             return ingredient;
         }
 
@@ -61,6 +61,7 @@ namespace RecipeFinder.DataAccess.Repositories
             if (ingredientEntity != null)
             {
                 ingredientEntity.Name = ingredient.Name;
+                _context.Ingredients.Update(ingredientEntity);  // Explicitly marking the entity as modified
                 await _context.SaveChangesAsync();
             }
         }
@@ -74,6 +75,20 @@ namespace RecipeFinder.DataAccess.Repositories
                 _context.Ingredients.Remove(ingredientEntity);
                 await _context.SaveChangesAsync();
             }
+        }
+        public async Task<Ingredient> GetByNameAsync(string name)
+        {
+            var entity = await _context.Ingredients
+                                       .AsNoTracking()
+                                       .FirstOrDefaultAsync(i => i.Name.ToLower() == name.ToLower());
+
+            if (entity == null) return null;
+
+            return new Ingredient
+            {
+                IngredientId = entity.IngredientId,
+                Name = entity.Name
+            };
         }
     }
 }

@@ -8,7 +8,7 @@
         public string Instructions { get; set; }
         public int PreparationTime { get; set; }
         public int Difficulty { get; set; }
-        public int AuthorId { get; set; }
+        public string AuthorId { get; set; } 
         public int CategoryId { get; set; }
         public string ImageUrl { get; set; }
 

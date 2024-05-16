@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using RecipeFinder.Core.Models;
 using RecipeFinder.DataAccess.Configurations;
@@ -6,11 +6,13 @@ using RecipeFinder.DataAccess.Entities;
 
 namespace RecipeFinder.DataAccess
 {
-    public class RecipeFinderDbContext : IdentityDbContext<ApplicationUser>
+    public class RecipeFinderDbContext : IdentityDbContext<ApplicationUserEntity>
     {
-        public RecipeFinderDbContext(DbContextOptions<RecipeFinderDbContext> options) : base(options)
+        public RecipeFinderDbContext(DbContextOptions<RecipeFinderDbContext> options)
+            : base(options)
         {
         }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -26,8 +28,6 @@ namespace RecipeFinder.DataAccess
         public DbSet<IngredientEntity> Ingredients { get; set; }
         public DbSet<CategoryEntity> Categories { get; set; }
         public DbSet<FavoriteRecipeEntity> FavoriteRecipes { get; set; }
-        //public DbSet<ApplicationUserEntity> Users { get; set; }
-
     }
 
 }

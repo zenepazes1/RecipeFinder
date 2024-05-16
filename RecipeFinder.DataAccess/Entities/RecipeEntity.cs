@@ -11,7 +11,7 @@ namespace RecipeFinder.DataAccess.Entities
         public int PreparationTime { get; set; }
         public int Difficulty { get; set; }
         public string ImageUrl { get; set; }
-        public int AuthorId { get; set; }
+        public string AuthorId { get; set; } // Changed to string to match IdentityUser primary key type
         public int CategoryId { get; set; }
 
         public virtual ApplicationUserEntity Author { get; set; }

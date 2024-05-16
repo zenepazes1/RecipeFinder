@@ -1,6 +1,4 @@
-﻿using RecipeFinder.Core.Models;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using RecipeFinder.Core.Models;
 
 namespace RecipeFinder.Core.Abstractions
 {
@@ -11,5 +9,9 @@ namespace RecipeFinder.Core.Abstractions
         Task<IEnumerable<ApplicationUser>> GetAllAsync();
         Task UpdateAsync(ApplicationUser user);
         Task DeleteAsync(string id);
+        Task<bool> SetUserRoleAsync(string userId, string role);
+        Task<ApplicationUser> GetByEmailAsync(string email);
+        Task<bool> ChangePasswordAsync(string userId, string oldPassword, string newPassword);
+
     }
 }

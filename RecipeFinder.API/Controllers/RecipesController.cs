@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RecipeFinder.API.Contracts;
-using RecipeFinder.Application.Service;
+using RecipeFinder.Application.Services;
+using RecipeFinder.Core.Abstractions;
 using RecipeFinder.Core.Models;
 
 namespace RecipeFinder.API.Controllers
@@ -9,12 +10,17 @@ namespace RecipeFinder.API.Controllers
     [ApiController]
     public class RecipesController : ControllerBase
     {
-        private readonly RecipesService _recipesService;
+        private readonly IRecipeService _recipeService;
+
+        public RecipesController(IRecipeService recipeService)
+        {
+            _recipeService = recipeService;
+        }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<RecipeResponse>>> GetAllRecipes()
+        public async Task<IActionResult> GetAllRecipes()
         {
-            var recipes = await _recipesService.GetAllRecipesAsync();
+            var recipes = await _recipeService.GetAllRecipesAsync();
             var response = recipes.Select(r => new RecipeResponse(
                 r.RecipeId,
                 r.Title,
@@ -24,14 +30,39 @@ namespace RecipeFinder.API.Controllers
                 r.Difficulty,
                 r.AuthorId,
                 r.CategoryId,
-                r.ImageUrl)).ToList();
+                r.ImageUrl
+            ));
+            return Ok(response);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetRecipeById(int id)
+        {
+            var recipe = await _recipeService.GetRecipeByIdAsync(id);
+            if (recipe == null)
+                return NotFound($"Recipe with ID {id} not found.");
+
+            var response = new RecipeResponse(
+                recipe.RecipeId,
+                recipe.Title,
+                recipe.Description,
+                recipe.Instructions,
+                recipe.PreparationTime,
+                recipe.Difficulty,
+                recipe.AuthorId,
+                recipe.CategoryId,
+                recipe.ImageUrl
+            );
             return Ok(response);
         }
 
         [HttpPost]
-        public async Task<ActionResult<RecipeResponse>> CreateRecipe([FromBody] RecipeRequest request)
+        public async Task<IActionResult> CreateRecipe([FromBody] RecipeRequest request)
         {
-            var recipe = new Recipe
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var newRecipe = new Recipe
             {
                 Title = request.Title,
                 Description = request.Description,
@@ -42,8 +73,12 @@ namespace RecipeFinder.API.Controllers
                 CategoryId = request.CategoryId,
                 ImageUrl = request.ImageUrl
             };
-            var createdRecipe = await _recipesService.CreateRecipeAsync(recipe);
-            return CreatedAtAction(nameof(GetRecipe), new { id = createdRecipe.RecipeId }, new RecipeResponse(
+
+            var createdRecipe = await _recipeService.CreateRecipeAsync(newRecipe);
+            if (createdRecipe == null)
+                return BadRequest("Failed to create the recipe.");
+
+            return CreatedAtAction(nameof(GetRecipeById), new { id = createdRecipe.RecipeId }, new RecipeResponse(
                 createdRecipe.RecipeId,
                 createdRecipe.Title,
                 createdRecipe.Description,
@@ -52,17 +87,19 @@ namespace RecipeFinder.API.Controllers
                 createdRecipe.Difficulty,
                 createdRecipe.AuthorId,
                 createdRecipe.CategoryId,
-                createdRecipe.ImageUrl));
+                createdRecipe.ImageUrl
+            ));
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateRecipe(int id, [FromBody] RecipeRequest request)
         {
-            var existingRecipe = await _recipesService.GetRecipeByIdAsync(id);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var existingRecipe = await _recipeService.GetRecipeByIdAsync(id);
             if (existingRecipe == null)
-            {
                 return NotFound($"Recipe with ID {id} not found.");
-            }
 
             existingRecipe.Title = request.Title;
             existingRecipe.Description = request.Description;
@@ -73,42 +110,37 @@ namespace RecipeFinder.API.Controllers
             existingRecipe.CategoryId = request.CategoryId;
             existingRecipe.ImageUrl = request.ImageUrl;
 
-            await _recipesService.UpdateRecipeAsync(existingRecipe);
+            await _recipeService.UpdateRecipeAsync(existingRecipe);
             return NoContent();
-        }
-
-        [HttpGet("{id}")]
-        public async Task<ActionResult<RecipeResponse>> GetRecipe(int id)
-        {
-            var recipe = await _recipesService.GetRecipeByIdAsync(id);
-            if (recipe == null)
-            {
-                return NotFound();
-            }
-            var response = new RecipeResponse(
-                recipe.RecipeId,
-                recipe.Title,
-                recipe.Description,
-                recipe.Instructions,
-                recipe.PreparationTime,
-                recipe.Difficulty,
-                recipe.AuthorId,
-                recipe.CategoryId,
-                recipe.ImageUrl);
-            return Ok(response);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRecipe(int id)
         {
-            var recipe = await _recipesService.GetRecipeByIdAsync(id);
+            var recipe = await _recipeService.GetRecipeByIdAsync(id);
             if (recipe == null)
-            {
-                return NotFound();
-            }
+                return NotFound($"Recipe with ID {id} not found.");
 
-            await _recipesService.DeleteRecipeAsync(id);
+            await _recipeService.DeleteRecipeAsync(id);
             return NoContent();
+        }
+
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchRecipes(string searchTerm)
+        {
+            var recipes = await _recipeService.SearchRecipesAsync(searchTerm);
+            var response = recipes.Select(r => new RecipeResponse(
+                r.RecipeId,
+                r.Title,
+                r.Description,
+                r.Instructions,
+                r.PreparationTime,
+                r.Difficulty,
+                r.AuthorId,
+                r.CategoryId,
+                r.ImageUrl
+            ));
+            return Ok(response);
         }
 
     }

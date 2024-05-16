@@ -1,8 +1,11 @@
 ﻿using RecipeFinder.DataAccess.Repositories;
 using RecipeFinder.Core.Models;
 using RecipeFinder.Core.Abstractions;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-namespace RecipeFinder.Application.Service
+namespace RecipeFinder.Application.Services
 {
     public class IngredientService : IIngredientService
     {
@@ -15,6 +18,16 @@ namespace RecipeFinder.Application.Service
 
         public async Task<Ingredient> CreateIngredientAsync(Ingredient ingredient)
         {
+            if (ingredient == null)
+                throw new ArgumentNullException(nameof(ingredient));
+
+            if (string.IsNullOrWhiteSpace(ingredient.Name))
+                throw new ArgumentException("Ingredient name cannot be empty.");
+
+            var existingIngredient = await _ingredientRepository.GetByNameAsync(ingredient.Name);
+            if (existingIngredient != null)
+                throw new InvalidOperationException("An ingredient with the same name already exists.");
+
             return await _ingredientRepository.AddAsync(ingredient);
         }
 
@@ -25,17 +38,32 @@ namespace RecipeFinder.Application.Service
 
         public async Task<Ingredient> GetIngredientByIdAsync(int id)
         {
-            return await _ingredientRepository.GetByIdAsync(id);
+            var ingredient = await _ingredientRepository.GetByIdAsync(id);
+            if (ingredient == null)
+                return null;
+            return ingredient;
         }
 
         public async Task UpdateIngredientAsync(Ingredient ingredient)
         {
+            if (ingredient == null)
+                throw new ArgumentNullException(nameof(ingredient));
+
+            if (string.IsNullOrWhiteSpace(ingredient.Name))
+                throw new ArgumentException("Ingredient name cannot be empty.");
+
             await _ingredientRepository.UpdateAsync(ingredient);
         }
 
         public async Task DeleteIngredientAsync(int id)
         {
             await _ingredientRepository.DeleteAsync(id);
+        }
+
+        public async Task<Ingredient> GetByNameIngredientAsync(string name)
+        {
+            
+            return await _ingredientRepository.GetByNameAsync(name);
         }
     }
 }

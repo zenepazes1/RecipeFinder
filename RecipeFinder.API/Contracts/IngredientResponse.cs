@@ -1,7 +1,7 @@
 ﻿namespace RecipeFinder.API.Contracts
 {
     public record IngredientResponse(
-        int IngredientId, 
+        int IngredientId,
         string Name);
 
 }

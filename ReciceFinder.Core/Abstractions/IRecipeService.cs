@@ -7,6 +7,7 @@ namespace RecipeFinder.Core.Abstractions
         Task<Recipe> CreateRecipeAsync(Recipe recipe);
         Task<Recipe> GetRecipeByIdAsync(int id);
         Task<IEnumerable<Recipe>> GetAllRecipesAsync();
+        Task<IEnumerable<Recipe>> SearchRecipesAsync(string criteria);
         Task UpdateRecipeAsync(Recipe recipe);
         Task DeleteRecipeAsync(int id);
     }

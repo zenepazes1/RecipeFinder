@@ -11,16 +11,15 @@ namespace RecipeFinder.DataAccess.Configurations
             builder.Property(u => u.FirstName).HasMaxLength(50);
             builder.Property(u => u.LastName).HasMaxLength(50);
 
-            // Настройка связей
-            builder.HasMany(u => u.Recipes) 
-                .WithOne(r => r.Author) 
-                .HasForeignKey(r => r.AuthorId) 
-                .OnDelete(DeleteBehavior.Cascade); 
+            builder.HasMany(u => u.Recipes)
+                   .WithOne(r => r.Author)
+                   .HasForeignKey(r => r.AuthorId)
+                   .OnDelete(DeleteBehavior.SetNull);
 
-            builder.HasMany(u => u.FavoriteRecipes) 
-                .WithOne(fr => fr.User) 
-                .HasForeignKey(fr => fr.UserId)
-                .OnDelete(DeleteBehavior.Cascade); 
+            builder.HasMany(u => u.FavoriteRecipes)
+                   .WithOne(fr => fr.User)
+                   .HasForeignKey(fr => fr.UserId)
+                   .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }
