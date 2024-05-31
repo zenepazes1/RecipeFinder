@@ -1,0 +1,118 @@
+<div class="row mt-4">
+  <div class="col-md-6">
+    <h2>Already have an account?</h2>
+    <form #loginForm="ngForm" (ngSubmit)="loginSubmit(loginForm)">
+      <div class="mb-3">
+        <label for="loginEmail" class="form-label">Email</label>
+        <input
+          type="email"
+          class="form-control"
+          name="loginEmail"
+          id="loginEmail"
+          placeholder="example@gmail.com"
+          required
+          email
+          [(ngModel)]="loginDetails.email"
+        />
+        @if (loginForm.controls['loginEmail'] &&
+        loginForm.controls['loginEmail'].touched &&
+        loginForm.controls['loginEmail'].invalid) {
+        <div class="text-danger">Invalid email address!</div>
+        }
+      </div>
+      <div class="mb-3">
+        <label for="loginPassword" class="form-label">Password</label>
+        <input
+          type="password"
+          class="form-control"
+          name="loginPassword"
+          id="loginPassword"
+          minlength="6"
+          required
+          [(ngModel)]="loginDetails.password"
+        />
+        @if (loginForm.controls['loginPassword'] &&
+        loginForm.controls['loginPassword'].touched &&
+        loginForm.controls['loginPassword'].invalid) {
+        <div class="text-danger">Password is at least 6 characters!</div>
+        }
+      </div>
+      <button mat-flat-button color="primary" type="submit">Log In</button>
+    </form>
+  </div>
+  <div class="col-md-6">
+    <h2>Don't have an account?</h2>
+    <form #registerForm="ngForm" (ngSubmit)="registerSubmit(registerForm)">
+      <div class="mb-3">
+        <label for="firstname" class="form-label">First name</label>
+        <input
+          type="text"
+          class="form-control"
+          name="firstname"
+          id="firstname"
+          placeholder="John"
+          required
+          [(ngModel)]="registerDetails.firstName"
+        />
+        @if (registerForm.controls['firstname'] &&
+        registerForm.controls['firstname'].touched &&
+        registerForm.controls['firstname'].invalid) {
+        <div class="text-danger">This field is required!</div>
+        }
+      </div>
+      <div class="mb-3">
+        <label for="lastname" class="form-label">Last name</label>
+        <input
+          type="text"
+          class="form-control"
+          name="lastname"
+          id="lastname"
+          placeholder="Wick"
+          required
+          [(ngModel)]="registerDetails.lastName"
+        />
+        @if (registerForm.controls['lastname'] &&
+        registerForm.controls['lastname'].touched &&
+        registerForm.controls['lastname'].invalid) {
+        <div class="text-danger">This field is required!</div>
+        }
+      </div>
+      <div class="mb-3">
+        <label for="registerEmail" class="form-label">Email</label>
+        <input
+          type="email"
+          class="form-control"
+          name="registerEmail"
+          id="registerEmail"
+          placeholder="example@gmail.com"
+          required
+          email
+          [(ngModel)]="registerDetails.email"
+        />
+        @if (registerForm.controls['registerEmail'] &&
+        registerForm.controls['registerEmail'].touched &&
+        registerForm.controls['registerEmail'].invalid) {
+        <div class="text-danger">Invalid email address!</div>
+        }
+      </div>
+      <div class="mb-3">
+        <label for="registerPassword" class="form-label">Password</label>
+        <input
+          type="password"
+          class="form-control"
+          name="registerPassword"
+          id="registerPassword"
+          minlength="6"
+          required
+          [(ngModel)]="registerDetails.password"
+        />
+        @if (registerForm.controls['registerPassword'] &&
+        registerForm.controls['registerPassword'].touched &&
+        registerForm.controls['registerPassword'].invalid) {
+        <div class="text-danger">Password is at least 6 characters!</div>
+        }
+      </div>
+      <button mat-flat-button color="primary" type="submit">Register</button>
+    </form>
+  </div>
+</div>

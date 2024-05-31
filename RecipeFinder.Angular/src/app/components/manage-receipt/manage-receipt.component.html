@@ -1,0 +1,229 @@
+<div class="row">
+  <div class="col my-3 mx-5">
+    <h2 mat-dialog-title>Manage Receipt</h2>
+    <mat-dialog-content>
+      <form [formGroup]="recipeForm">
+        <div class="row">
+          <div
+            class="col d-flex flex-column justify-content-between"
+            style="padding: 1.25rem"
+          >
+            <mat-form-field appearance="fill" style="width: 100%; height: 100%">
+              <mat-label>Recipe Photo</mat-label>
+              <div class="fileUploadContainer">
+                @if (recipeForm.get('imageUrl')!.value) {
+                <img [src]="recipeForm.get('imageUrl')!.value" />
+                <button
+                  class="deleteButton"
+                  mat-icon-button
+                  (click)="
+                    fileInput.value = '';
+                    recipeForm.get('imageUrl')?.setValue(null)
+                  "
+                >
+                  <mat-icon>close</mat-icon>
+                </button>
+                }
+                <!-- no image -->
+                @if (!recipeForm.get('imageUrl')!.value) {
+                <div
+                  class="noImageContainer"
+                  fxLayout="column"
+                  fxLayoutAlign="center center"
+                  fxLayoutGap="10px"
+                >
+                  <mat-icon style="opacity: 60%">file_upload</mat-icon>
+                  <button
+                    mat-raised-button
+                    color="primary"
+                    style="width: 100%; opacity: 80%"
+                  >
+                    Browser
+                  </button>
+                  <small style="margin: 20px">Drag and drop here</small>
+                </div>
+                }
+                <!-- put on top of the fileUploadContainer with opacity 0 -->
+                <input
+                  #fileInput
+                  class="fileInput"
+                  type="file"
+                  multiple="multiple"
+                  accept="image/*"
+                  (change)="setFileData($event)"
+                />
+              </div>
+              <input
+                matInput
+                formControlName="imageUrl"
+                readonly
+                [hidden]="true"
+              />
+              @if (recipeForm.get('imageUrl')?.invalid) {
+              <mat-error>{{ formErrorMessages["imageUrl"] }}</mat-error>
+              }
+            </mat-form-field>
+            <div class="row flex-nowrap">
+              <div class="col">
+                <mat-form-field floatLabel="always">
+                  <mat-label>Preparation time (minutes)</mat-label>
+                  <input
+                    matInput
+                    type="number"
+                    min="1"
+                    formControlName="preparationTime"
+                    (blur)="updateErrorMessages()"
+                    required
+                  />
+                  <span matTextSuffix>
+                    <mat-icon>timer</mat-icon>
+                  </span>
+                  @if (recipeForm.get('preparationTime')?.invalid) {
+                  <mat-error>{{
+                    formErrorMessages["preparationTime"]
+                  }}</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+              <div class="col">
+                <mat-form-field floatLabel="always">
+                  <mat-label>Difficulty (1-5)</mat-label>
+                  <input
+                    matInput
+                    type="number"
+                    min="1"
+                    max="5"
+                    formControlName="difficulty"
+                    (blur)="updateErrorMessages()"
+                    required
+                  />
+                  <span matTextSuffix>
+                    <mat-icon>signal_cellular_alt</mat-icon>
+                  </span>
+                  @if (recipeForm.get('difficulty')?.invalid) {
+                  <mat-error>{{ formErrorMessages["difficulty"] }}</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col recipe-details-col">
+                <mat-form-field>
+                  <mat-label>Select category</mat-label>
+                  <mat-select
+                    formControlName="categoryId"
+                    required
+                    (closed)="updateErrorMessages()"
+                  >
+                    @for (category of (categories$ | async); track
+                    category.categoryId) {
+                    <mat-option [value]="category.categoryId">{{
+                      category.name
+                    }}</mat-option>
+                    }
+                  </mat-select>
+                  @if (recipeForm.get('categoryId')?.invalid) {
+                  <mat-error>{{ formErrorMessages["categoryId"] }}</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+          <div class="col recipe-details-col" style="padding: 1.25rem">
+            <mat-form-field>
+              <mat-label>Title</mat-label>
+              <input
+                matInput
+                placeholder="Soup recipe"
+                formControlName="title"
+                (blur)="updateErrorMessages()"
+                required
+              />
+              @if (recipeForm.get('title')?.invalid) {
+              <mat-error>{{ formErrorMessages["title"] }}</mat-error>
+              }
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Description</mat-label>
+              <textarea
+                matInput
+                placeholder="Delicious soup recipe"
+                formControlName="description"
+                (blur)="updateErrorMessages()"
+                required
+              ></textarea>
+              @if (recipeForm.get('description')?.invalid) {
+              <mat-error>{{ formErrorMessages["description"] }}</mat-error>
+              }
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Instructions</mat-label>
+              <textarea
+                matInput
+                placeholder="Step 1: Boil water..."
+                formControlName="instructions"
+                (blur)="updateErrorMessages()"
+                required
+              ></textarea>
+              @if (recipeForm.get('instructions')?.invalid) {
+              <mat-error>{{ formErrorMessages["instructions"] }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col recipe-details-col">
+            <mat-form-field>
+              <mat-label>Ingredients</mat-label>
+              <mat-chip-grid #chipGrid>
+                @for(ingredient of recipeForm.get('ingredients')?.value; track
+                ingredient.ingredientId) {
+                <mat-chip-row (removed)="removeIngredient(ingredient)">
+                  {{ ingredient.name }}
+                  <button
+                    matChipRemove
+                    [attr.aria-label]="'remove ' + ingredient.name"
+                  >
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </mat-chip-row>
+                }
+              </mat-chip-grid>
+              <input
+                placeholder="Add ingredient"
+                #ingredientInput
+                formControlName="ingredientCtrl"
+                [matChipInputFor]="chipGrid"
+                [matAutocomplete]="auto"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                (matChipInputTokenEnd)="addIngredient($event)"
+              />
+
+              <mat-autocomplete
+                #auto="matAutocomplete"
+                (optionSelected)="selected($event)"
+                (closed)="updateErrorMessages()"
+              >
+                @for (ingredient of filteredIngredients$ | async; track
+                ingredient.ingredientId) {
+                <mat-option [value]="ingredient.ingredientId">{{
+                  ingredient.name
+                }}</mat-option>
+                }
+              </mat-autocomplete>
+            </mat-form-field>
+            @if (recipeForm.get('ingredients')?.invalid) {
+            <mat-error>{{ formErrorMessages["ingredients"] }}</mat-error>
+            }
+          </div>
+        </div>
+      </form>
+    </mat-dialog-content>
+    <mat-dialog-actions class="justify-content-between">
+      <button mat-button (click)="onCancelClick()">Cancel</button>
+      <button mat-button (click)="receiptManageSubmit(recipeForm)">
+        {{ data.receipt ? "Edit Recipe" : "Add Recipe" }}
+      </button>
+    </mat-dialog-actions>
+  </div>
+</div>

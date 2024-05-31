@@ -17,6 +17,17 @@ using RecipeFinder.DataAccess.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Enable CORS
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(builder =>
+    {
+        builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader();
+    });
+});
+
 // Add services to the container.
 builder.Services.AddDbContext<RecipeFinderDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("RecipeFinderDbContext")));
@@ -72,6 +83,7 @@ builder.Services.AddScoped<IIngredientService, IngredientService>();
 builder.Services.AddScoped<IIngredientRepository, IngredientRepository>();
 builder.Services.AddScoped<IFavoriteRecipeService, FavoriteRecipeService>();
 builder.Services.AddScoped<IFavoriteRecipeRepository, FavoriteRecipeRepository>();
+builder.Services.AddScoped<IRecipeIngredientRepository, RecipeIngredientRepository>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -93,6 +105,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

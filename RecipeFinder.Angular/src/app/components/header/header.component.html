@@ -1,0 +1,50 @@
+<mat-toolbar>
+  <div class="container">
+    <nav class="navbar navbar-light">
+      <div class="d-flex align-items-base">
+        <a class="navbar-brand" routerLink="/home">Recipe Finder</a>
+        <ul class="navbar-nav flex-row gap-2" style="font-size: 1rem">
+          @if ((userRole$ | async) === 'Admin') {
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              routerLink="/ingredients"
+              routerLinkActive="active"
+              >Ingredients</a
+            >
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              routerLink="/categories"
+              routerLinkActive="active"
+              >Categories</a
+            >
+          </li>
+          } @else {
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/recipes" routerLinkActive="active"
+              >Recipes</a
+            >
+          </li>
+          }
+        </ul>
+      </div>
+      <div class="d-flex justify-content-end align-items-center gap-2">
+        @if ((userRole$ | async) !== 'Admin') {
+        <button mat-icon-button routerLink="/favorite">
+          <mat-icon>favorite</mat-icon>
+        </button>
+        } @if (!(isLoggedIn$ | async)) {
+        <button mat-raised-button color="primary" routerLink="/register">
+          Log In
+        </button>
+        } @else {
+        <button mat-icon-button (click)="onProfileClick()">
+          <mat-icon>account_circle</mat-icon>
+        </button>
+        }
+      </div>
+    </nav>
+  </div>
+</mat-toolbar>

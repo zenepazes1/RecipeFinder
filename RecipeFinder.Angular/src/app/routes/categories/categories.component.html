@@ -1,0 +1,42 @@
+@if (isLoggedIn$ | async) {
+<table class="table mt-5">
+  <thead>
+    <tr>
+      <th scope="col" style="width: 100%">Category</th>
+      <th scope="col" class="text-center">Edit</th>
+      <th scope="col" class="text-center">Delete</th>
+    </tr>
+  </thead>
+  <tbody>
+    @if (isCategoriesEmpty$ | async) {
+    <tr>
+      <td colspan="3" class="text-center">No categories found!</td>
+    </tr>
+    } @for(category of categories$ | async; track category.categoryId) {
+    <tr>
+      <td>{{ category.name }}</td>
+      <td>
+        <button
+          mat-mini-fab
+          color="primary"
+          class="rounded"
+          (click)="onEditClick(category)"
+        >
+          <mat-icon>edit</mat-icon>
+        </button>
+      </td>
+      <td>
+        <button
+          mat-mini-fab
+          color="warn"
+          class="rounded"
+          (click)="onDeleteClick(category.categoryId)"
+        >
+          <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </tr>
+    }
+  </tbody>
+</table>
+}

@@ -1,0 +1,16 @@
+@if (isLoggedIn$ | async) {
+<div class="row mt-5">
+  @if ((favoriteFullRecipes$ | async); as favoriteFullRecipes) { @if
+  (favoriteFullRecipes.length) { @for (recipe of favoriteFullRecipes; track
+  recipe.recipeId) {
+  <div class="col-md-3">
+    <app-recipe-card [recipe]="recipe"></app-recipe-card>
+  </div>
+  } } @else {
+  <div class="col text-center">
+    <h2>No favorite recipes found!</h2>
+    <mat-icon>heart_broken</mat-icon>
+  </div>
+  } }
+</div>
+}

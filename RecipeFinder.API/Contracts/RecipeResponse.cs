@@ -7,7 +7,13 @@
         string Instructions,
         int PreparationTime,
         int Difficulty,
+        string ImageUrl,
+
         string AuthorId,
+        UserResponse Author,
         int CategoryId,
-        string ImageUrl);
+        CategoryResponse Category,
+        
+        ICollection<IngredientResponse> Ingredients
+    );
 }

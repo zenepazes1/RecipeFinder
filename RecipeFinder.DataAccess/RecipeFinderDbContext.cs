@@ -22,12 +22,14 @@ namespace RecipeFinder.DataAccess
             modelBuilder.ApplyConfiguration(new CategoryEntityConfiguration());
             modelBuilder.ApplyConfiguration(new IngredientEntityConfiguration());
             modelBuilder.ApplyConfiguration(new FavoriteRecipeEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new RecipeIngredientEntityConfiguration());
         }
 
         public DbSet<RecipeEntity> Recipes { get; set; }
         public DbSet<IngredientEntity> Ingredients { get; set; }
         public DbSet<CategoryEntity> Categories { get; set; }
         public DbSet<FavoriteRecipeEntity> FavoriteRecipes { get; set; }
+        public DbSet<RecipeIngredientEntity> RecipeIngredients { get; set; }
     }
 
 }

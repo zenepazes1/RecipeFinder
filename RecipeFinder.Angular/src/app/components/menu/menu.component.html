@@ -1,0 +1,11 @@
+<button mat-mini-fab [matMenuTriggerFor]="menu" color="primary">
+  <mat-icon>add</mat-icon>
+</button>
+<mat-menu #menu="matMenu" yPosition="above">
+  @if ((userRole$ | async) === 'Admin') {
+  <button mat-menu-item (click)="onAddIngredientClick()">New Ingredient</button>
+  <button mat-menu-item (click)="onAddCategoryClick()">New Category</button>
+  } @else {
+  <button mat-menu-item (click)="onAddReceiptClick()">New Recipe</button>
+  }
+</mat-menu>
