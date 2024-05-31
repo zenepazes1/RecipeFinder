@@ -2,6 +2,7 @@
 {
     public record IngredientResponse(
         int IngredientId,
-        string Name);
+        string Name
+    );
 
 }

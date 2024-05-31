@@ -1,0 +1,32 @@
+<div class="row">
+  <div class="col my-3 mx-5">
+    <h2 mat-dialog-title>Manage Ingredients</h2>
+    <mat-dialog-content>
+      <form #ingredientForm="ngForm">
+        <div class="mb-3">
+          <label for="ingredientName" class="form-label">Ingredient Name</label>
+          <input
+            type="text"
+            class="form-control"
+            name="ingredientName"
+            id="ingredientName"
+            placeholder="Tomato"
+            required
+            [(ngModel)]="ingredientDetails.name"
+          />
+          @if (ingredientForm.controls['ingredientName'] &&
+          ingredientForm.controls['ingredientName'].touched &&
+          ingredientForm.controls['ingredientName'].invalid) {
+          <div class="text-danger">This field is required!</div>
+          }
+        </div>
+      </form>
+    </mat-dialog-content>
+    <mat-dialog-actions class="justify-content-between">
+      <button mat-button (click)="onCancelClick()">Cancel</button>
+      <button mat-button (click)="ingredientManageSubmit(ingredientForm)">
+        {{ data.ingredient ? "Edit Ingredient" : "Add Ingredient" }}
+      </button>
+    </mat-dialog-actions>
+  </div>
+</div>

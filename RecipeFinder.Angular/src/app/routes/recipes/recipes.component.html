@@ -1,0 +1,26 @@
+<div class="row pt-5 pb-2">
+  <div class="col">
+    <mat-form-field appearance="fill" style="min-width: 25rem">
+      <mat-label>Search Recipes</mat-label>
+      <input
+        matInput
+        [formControl]="searchControl"
+        placeholder="Enter recipe title"
+      />
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+  </div>
+</div>
+<div class="row">
+  @if (filteredRecipes$ | async; as recipes) { @if (recipes.length) {
+  @for(recipe of recipes; track recipe.recipeId) {
+  <div class="col-md-3">
+    <app-recipe-card [recipe]="recipe"></app-recipe-card>
+  </div>
+  } } @else {
+  <div class="col text-center">
+    <h2>No recipes found!</h2>
+    <mat-icon>sentiment_very_dissatisfied</mat-icon>
+  </div>
+  } }
+</div>

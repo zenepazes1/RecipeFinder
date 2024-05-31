@@ -1,4 +1,6 @@
-﻿namespace RecipeFinder.API.Contracts
+﻿using RecipeFinder.Core.Models;
+
+namespace RecipeFinder.API.Contracts
 {
     public record RecipeRequest(
         string Title,
@@ -8,5 +10,8 @@
         int Difficulty,
         string AuthorId,
         int CategoryId,
-        string ImageUrl);
+        string ImageUrl,
+
+        List<int> IngredientIds
+    );
 }

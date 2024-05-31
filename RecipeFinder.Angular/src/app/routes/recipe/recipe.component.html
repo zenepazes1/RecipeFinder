@@ -1,0 +1,45 @@
+@if (recipe$ | async; as recipe) {
+<div class="row mt-5">
+  <div class="col-md-6 d-flex justify-content-center align-items-center">
+    <img
+      class="img-fluid rounded shadow"
+      src="{{ recipe.imageUrl }}"
+      alt="{{ recipe.title }}"
+    />
+  </div>
+  <div class="col-md-6">
+    <h2>{{ recipe.title }}</h2>
+    <h3 class="font-weight-bold">Category: {{ recipe.category.name }}</h3>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="d-flex align-items-center opacity-50">
+          <p class="m-0 h4">{{ recipe.preparationTime }}</p>
+          <mat-icon>timer</mat-icon>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="d-flex align-items-center opacity-50 justify-content-end">
+          <p class="m-0 h4">{{ recipe.difficulty }}</p>
+          <mat-icon>signal_cellular_alt</mat-icon>
+        </div>
+      </div>
+    </div>
+    <hr />
+    <p>{{ recipe.description }}</p>
+    <div class="row border rounded my-3">
+      <div class="col-md-12">
+        <p class="m-0">{{ recipe.instructions }}</p>
+      </div>
+    </div>
+    <h3 class="mb-1">Ingredients</h3>
+    <mat-chip-set aria-label="`{{${recipe.title} ingredients`}}">
+      @for(ingredient of recipe.ingredients; track ingredient.ingredientId) {
+      <mat-chip>{{ ingredient.name }}</mat-chip>
+      }
+    </mat-chip-set>
+    <p class="text-end my-2">
+      By {{ recipe.author.firstName }} {{ recipe.author.lastName }}
+    </p>
+  </div>
+</div>
+}

@@ -1,0 +1,14 @@
+<!-- header -->
+<app-header></app-header>
+
+<!-- content -->
+<div class="container">
+  <router-outlet></router-outlet>
+</div>
+
+<!-- footer -->
+
+<!-- menu -->
+@if (isLoggedIn$ | async) {
+<app-menu class="app-menu"></app-menu>
+}

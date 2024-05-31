@@ -2,8 +2,6 @@
 using RecipeFinder.Core.Abstractions;
 using RecipeFinder.Core.Models;
 using RecipeFinder.DataAccess.Entities;
-using RecipeFinder.DataAccess.Mapping;
-
 
 namespace RecipeFinder.Application.Services
 {

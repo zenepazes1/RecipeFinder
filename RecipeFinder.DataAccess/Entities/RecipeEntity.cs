@@ -11,12 +11,13 @@ namespace RecipeFinder.DataAccess.Entities
         public int PreparationTime { get; set; }
         public int Difficulty { get; set; }
         public string ImageUrl { get; set; }
-        public string AuthorId { get; set; } // Changed to string to match IdentityUser primary key type
+        public string AuthorId { get; set; }
         public int CategoryId { get; set; }
 
-        public virtual ApplicationUserEntity Author { get; set; }
-        public virtual CategoryEntity Category { get; set; }
+        public virtual ApplicationUserEntity? Author { get; set; }
+        public virtual CategoryEntity? Category { get; set; }
         public virtual ICollection<IngredientEntity> Ingredients { get; set; } = new List<IngredientEntity>();
+        public virtual ICollection<RecipeIngredientEntity> RecipeIngredients { get; set; } = new List<RecipeIngredientEntity>();
         public virtual ICollection<FavoriteRecipeEntity> FavoriteRecipes { get; set; } = new List<FavoriteRecipeEntity>();
     }
 }

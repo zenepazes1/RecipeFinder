@@ -1,5 +1,4 @@
 ﻿using RecipeFinder.Core.Models;
-using RecipeFinder.Core.Common;
 
 namespace RecipeFinder.Core.Abstractions
 {

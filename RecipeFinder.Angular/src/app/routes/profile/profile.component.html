@@ -1,0 +1,68 @@
+<div class="row mt-5">
+  <div class="col-12">
+    <div class="row">
+      <div class="col-8">
+        <h1>Hello, {{ fullName$ | async }} 👋</h1>
+        <p>Your email: {{ (user$ | async)?.email }}</p>
+      </div>
+      <div class="col-4 d-flex justify-content-end align-items-end">
+        <button mat-flat-button color="warn" (click)="onLogOutClick()">
+          Log Out
+        </button>
+      </div>
+    </div>
+
+    <hr />
+    <h2>Your recipes</h2>
+    <div class="row">
+      @if ((userRecipes$ | async); as userRecipes) { @if (userRecipes.length) {
+      @for (recipe of userRecipes; track recipe.recipeId) {
+      <div class="col-md-3">
+        <div class="card mb-3">
+          <img
+            src="{{ recipe.imageUrl }}"
+            class="img-fluid rounded-start card-img-top"
+            alt="{{ recipe.title }}"
+          />
+          <div class="card-body">
+            <h5 class="card-title h4">{{ recipe.title }}</h5>
+            <p class="card-text">{{ recipe.description }}</p>
+            <div class="d-flex flex-wrap justify-content-between">
+              <button
+                mat-button
+                color="primary"
+                (click)="onRecipeClick(recipe.recipeId)"
+              >
+                View recipe
+              </button>
+              <button
+                mat-button
+                color="warn"
+                (click)="onDeleteClick(recipe.recipeId)"
+              >
+                Delete recipe
+              </button>
+              <button
+                mat-button
+                color="accent"
+                (click)="onEditClick(recipe)"
+                style="flex: 1"
+              >
+                Edit recipe
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      } } @else {
+      <div class="col text-center">
+        <h2>You don't have any recipes!</h2>
+        <button mat-flat-button color="primary" (click)="onAddReceiptClick()">
+          Create recipe
+        </button>
+      </div>
+
+      } }
+    </div>
+  </div>
+</div>

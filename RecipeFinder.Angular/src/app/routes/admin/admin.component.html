@@ -1,0 +1,37 @@
+<div class="row mt-5">
+  <div class="col text-center">
+    <h2>Welcome in admin panel!</h2>
+    <p>Manage ingredients and recipes in one place</p>
+  </div>
+</div>
+<hr />
+<div class="row gap-3">
+  <div class="col text-center border rounded">
+    <button
+      mat-flat-button
+      color="primary"
+      (click)="onManageIngredientsClick()"
+      class="py-5 my-5"
+    >
+      Manage ingredients
+    </button>
+  </div>
+  <div class="col text-center border rounded">
+    <button
+      mat-flat-button
+      color="primary"
+      (click)="onManageCategoriesClick()"
+      class="py-5 my-5"
+    >
+      Manage categories
+    </button>
+  </div>
+</div>
+
+<div class="row mt-5">
+  <div class="col text-center">
+    <button mat-flat-button color="warn" (click)="onLogOutClick()">
+      Log Out
+    </button>
+  </div>
+</div>

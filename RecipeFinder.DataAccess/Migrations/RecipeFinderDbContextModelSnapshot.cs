@@ -22,21 +22,6 @@ namespace RecipeFinder.DataAccess.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("IngredientEntityRecipeEntity", b =>
-                {
-                    b.Property<int>("IngredientsIngredientId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("RecipesRecipeId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("IngredientsIngredientId", "RecipesRecipeId");
-
-                    b.HasIndex("RecipesRecipeId");
-
-                    b.ToTable("IngredientEntityRecipeEntity");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -342,19 +327,19 @@ namespace RecipeFinder.DataAccess.Migrations
                     b.ToTable("Recipes");
                 });
 
-            modelBuilder.Entity("IngredientEntityRecipeEntity", b =>
+            modelBuilder.Entity("RecipeFinder.DataAccess.Entities.RecipeIngredientEntity", b =>
                 {
-                    b.HasOne("RecipeFinder.DataAccess.Entities.IngredientEntity", null)
-                        .WithMany()
-                        .HasForeignKey("IngredientsIngredientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<int>("RecipeId")
+                        .HasColumnType("integer");
 
-                    b.HasOne("RecipeFinder.DataAccess.Entities.RecipeEntity", null)
-                        .WithMany()
-                        .HasForeignKey("RecipesRecipeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<int>("IngredientId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("RecipeId", "IngredientId");
+
+                    b.HasIndex("IngredientId");
+
+                    b.ToTable("RecipeIngredients");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -446,6 +431,25 @@ namespace RecipeFinder.DataAccess.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("RecipeFinder.DataAccess.Entities.RecipeIngredientEntity", b =>
+                {
+                    b.HasOne("RecipeFinder.DataAccess.Entities.IngredientEntity", "Ingredient")
+                        .WithMany("RecipeIngredients")
+                        .HasForeignKey("IngredientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RecipeFinder.DataAccess.Entities.RecipeEntity", "Recipe")
+                        .WithMany("RecipeIngredients")
+                        .HasForeignKey("RecipeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Ingredient");
+
+                    b.Navigation("Recipe");
+                });
+
             modelBuilder.Entity("RecipeFinder.DataAccess.Entities.ApplicationUserEntity", b =>
                 {
                     b.Navigation("FavoriteRecipes");
@@ -458,9 +462,16 @@ namespace RecipeFinder.DataAccess.Migrations
                     b.Navigation("Recipes");
                 });
 
+            modelBuilder.Entity("RecipeFinder.DataAccess.Entities.IngredientEntity", b =>
+                {
+                    b.Navigation("RecipeIngredients");
+                });
+
             modelBuilder.Entity("RecipeFinder.DataAccess.Entities.RecipeEntity", b =>
                 {
                     b.Navigation("FavoriteRecipes");
+
+                    b.Navigation("RecipeIngredients");
                 });
 #pragma warning restore 612, 618
         }
