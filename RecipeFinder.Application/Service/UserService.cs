@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using RecipeFinder.Core.Abstractions;
 using RecipeFinder.Core.Models;
 using RecipeFinder.DataAccess.Entities;
